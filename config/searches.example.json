@@ -1,0 +1,42 @@
+{
+  "searches": [
+    {
+      "name": "Ordinateurs portables pas chers à Paris",
+      "keywords": "macbook",
+      "onlyTitle": false,
+      "category": "15",
+      "locations": ["Paris"],
+      "priceMin": 100,
+      "priceMax": 500,
+      "ownerType": "all",
+      "buyerLocation": {
+        "lat": 48.8566,
+        "lng": 2.3522
+      }
+    },
+    {
+      "name": "Vélos électriques en Île-de-France",
+      "keywords": "vélo électrique",
+      "category": "55",
+      "locations": [11],
+      "priceMax": 1000,
+      "ownerType": "private",
+      "buyerLocation": {
+        "lat": 48.8566,
+        "lng": 2.3522
+      }
+    },
+    {
+      "name": "Appartements T2 à Lyon",
+      "keywords": "T2",
+      "category": "10",
+      "locations": ["Lyon"],
+      "priceMin": 500,
+      "priceMax": 900,
+      "buyerLocation": {
+        "lat": 45.764,
+        "lng": 4.8357
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+node_modules
+dist
+npm-debug.log
+.git
+.gitignore
+.env
+data
+config/searches.json
+*.md
+
+# Next.js
+web/.next/
+web/out/
+web/node_modules
+
+# Development
+.vscode
+.idea
+*.log
