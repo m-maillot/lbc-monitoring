@@ -17,7 +17,7 @@ export class BufferedLogger implements ILogger {
 
     ads.forEach((ad, index) => {
       this.buffer.push(`📦 Annonce #${index + 1}`);
-      this.buffer.push(`   Titre: ${ad.subject}`);
+      this.buffer.push(`   Titre: ${ad.title}`);
       this.buffer.push(`   Prix: ${ad.price}€`);
       this.buffer.push(`   Localisation: ${ad.location}`);
       this.buffer.push(`   Catégorie: ${ad.category}`);
@@ -31,16 +31,16 @@ export class BufferedLogger implements ILogger {
 
       this.buffer.push(`   🔗 Lien: ${ad.url}`);
 
-      if (ad.firstImageUrl) {
-        this.buffer.push(`   🖼️  Image: ${ad.firstImageUrl}`);
+      if (ad.imageUrl) {
+        this.buffer.push(`   🖼️  Image: ${ad.imageUrl}`);
       }
 
-      if (ad.date) {
-        this.buffer.push(`   📅 Date de publication: ${ad.date}`);
+      if (ad.publicationDate) {
+        this.buffer.push(`   📅 Date de publication: ${ad.publicationDate}`);
       }
 
-      if (ad.distance !== undefined) {
-        this.buffer.push(`   📍 Distance: ${ad.distance.toFixed(1)} km`);
+      if (ad.distanceKm !== undefined) {
+        this.buffer.push(`   📍 Distance: ${ad.distanceKm.toFixed(1)} km`);
       }
 
       this.buffer.push('--------------------------------------------------------------------------------');
