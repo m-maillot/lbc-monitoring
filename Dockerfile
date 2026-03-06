@@ -16,7 +16,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build Next.js application
-RUN npm run web:build
+RUN npm run web:build && mkdir -p /app/web/public
 
 # Production image, copy all the files and run next
 FROM base AS runner
@@ -30,9 +30,7 @@ RUN mkdir -p /app/config /app/data
 # Copy necessary files
 COPY --from=builder /app/web/.next/standalone ./
 COPY --from=builder /app/web/.next/static ./web/.next/static
-# Copy public directory if it exists
-RUN mkdir -p ./web/public
-COPY --from=builder --chown=node:node /app/web/public* ./web/ || true
+COPY --from=builder /app/web/public ./web/public
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/package.json ./package.json
 
