@@ -30,7 +30,9 @@ RUN mkdir -p /app/config /app/data
 # Copy necessary files
 COPY --from=builder /app/web/.next/standalone ./
 COPY --from=builder /app/web/.next/static ./web/.next/static
-COPY --from=builder /app/web/public ./web/public
+# Copy public directory if it exists
+RUN mkdir -p ./web/public
+COPY --from=builder --chown=node:node /app/web/public* ./web/ || true
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/package.json ./package.json
 
