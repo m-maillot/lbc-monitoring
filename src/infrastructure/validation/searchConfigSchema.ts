@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const BuyerLocationSchema = z.object({
   lat: z.number().min(-90, 'La latitude doit être entre -90 et 90').max(90, 'La latitude doit être entre -90 et 90'),
   lng: z.number().min(-180, 'La longitude doit être entre -180 et 180').max(180, 'La longitude doit être entre -180 et 180'),
+  radiusKm: z.number().min(0, 'Le rayon doit être positif').optional(),
 });
 
 export const SearchConfigurationSchema = z.object({

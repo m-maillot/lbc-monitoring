@@ -22,7 +22,15 @@ export class LbcAdvertisementRepository implements IAdvertisementRepository {
             limit: 100,
         });
 
-        const ads = searchResult.ads.map((ad: Result<any>) => this.mapToAdvertisement(ad, config));
+        let ads = searchResult.ads.map((ad: Result<any>) => this.mapToAdvertisement(ad, config));
+
+        // Filter by radius if buyer location with radius is provided
+        if (config.buyerLocation?.radiusKm !== undefined) {
+            ads = ads.filter(ad => {
+                if (ad.distanceKm === undefined) return false;
+                return ad.distanceKm <= config.buyerLocation!.radiusKm!;
+            });
+        }
 
         // Sort by distance if buyer location is provided
         if (config.buyerLocation) {

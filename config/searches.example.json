@@ -11,7 +11,8 @@
       "ownerType": "all",
       "buyerLocation": {
         "lat": 48.8566,
-        "lng": 2.3522
+        "lng": 2.3522,
+        "radiusKm": 10
       }
     },
     {
@@ -23,7 +24,8 @@
       "ownerType": "private",
       "buyerLocation": {
         "lat": 48.8566,
-        "lng": 2.3522
+        "lng": 2.3522,
+        "radiusKm": 20
       }
     },
     {
@@ -35,7 +37,8 @@
       "priceMax": 900,
       "buyerLocation": {
         "lat": 45.764,
-        "lng": 4.8357
+        "lng": 4.8357,
+        "radiusKm": 15
       }
     }
   ]

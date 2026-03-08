@@ -1,6 +1,7 @@
 export interface BuyerLocation {
   lat: number;
   lng: number;
+  radiusKm?: number;
 }
 
 export interface SearchConfiguration {

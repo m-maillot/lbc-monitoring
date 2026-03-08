@@ -6,6 +6,7 @@ import styles from './page.module.css';
 interface BuyerLocation {
   lat: number;
   lng: number;
+  radiusKm?: number;
 }
 
 interface SearchConfig {
@@ -126,7 +127,7 @@ export default function Home() {
     setConfig({ ...config, searches: newSearches });
   };
 
-  const updateBuyerLocation = (index: number, field: 'lat' | 'lng', value: number) => {
+  const updateBuyerLocation = (index: number, field: 'lat' | 'lng' | 'radiusKm', value: number | undefined) => {
     const newSearches = [...config.searches];
     newSearches[index] = {
       ...newSearches[index],
@@ -134,6 +135,7 @@ export default function Home() {
         ...newSearches[index].buyerLocation,
         lat: newSearches[index].buyerLocation?.lat || 0,
         lng: newSearches[index].buyerLocation?.lng || 0,
+        radiusKm: newSearches[index].buyerLocation?.radiusKm,
         [field]: value,
       },
     };
@@ -319,28 +321,44 @@ export default function Home() {
                   </div>
 
                   {search.buyerLocation ? (
-                    <div className={styles.formRow}>
-                      <div className={styles.formGroup}>
-                        <label>Latitude</label>
-                        <input
-                          type="number"
-                          step="0.0001"
-                          value={search.buyerLocation.lat}
-                          onChange={(e) => updateBuyerLocation(index, 'lat', Number(e.target.value))}
-                          placeholder="48.8566"
-                        />
+                    <>
+                      <div className={styles.formRow}>
+                        <div className={styles.formGroup}>
+                          <label>Latitude</label>
+                          <input
+                            type="number"
+                            step="0.0001"
+                            value={search.buyerLocation.lat}
+                            onChange={(e) => updateBuyerLocation(index, 'lat', Number(e.target.value))}
+                            placeholder="48.8566"
+                          />
+                        </div>
+                        <div className={styles.formGroup}>
+                          <label>Longitude</label>
+                          <input
+                            type="number"
+                            step="0.0001"
+                            value={search.buyerLocation.lng}
+                            onChange={(e) => updateBuyerLocation(index, 'lng', Number(e.target.value))}
+                            placeholder="2.3522"
+                          />
+                        </div>
                       </div>
                       <div className={styles.formGroup}>
-                        <label>Longitude</label>
+                        <label>Rayon (km) - Optionnel</label>
                         <input
                           type="number"
-                          step="0.0001"
-                          value={search.buyerLocation.lng}
-                          onChange={(e) => updateBuyerLocation(index, 'lng', Number(e.target.value))}
-                          placeholder="2.3522"
+                          min="0"
+                          step="1"
+                          value={search.buyerLocation.radiusKm || ''}
+                          onChange={(e) => updateBuyerLocation(index, 'radiusKm', e.target.value ? Number(e.target.value) : undefined)}
+                          placeholder="Ex: 10"
                         />
+                        <small style={{ color: '#666', fontSize: '0.9em', marginTop: '4px', display: 'block' }}>
+                          Seules les annonces dans ce rayon seront envoyées par email
+                        </small>
                       </div>
-                    </div>
+                    </>
                   ) : (
                     <button
                       onClick={() => updateSearch(index, 'buyerLocation', { lat: 48.8566, lng: 2.3522 })}
