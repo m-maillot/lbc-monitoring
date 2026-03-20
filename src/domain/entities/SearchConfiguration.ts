@@ -4,12 +4,27 @@ export interface BuyerLocation {
   radiusKm?: number;
 }
 
+export interface Location {
+  locationType: string;
+  label?: string;
+  city?: string;
+  zipcode?: string;
+  department_id?: string;
+  region_id?: string;
+  area?: {
+    lat: number;
+    lng: number;
+    default_radius: number;
+    radius?: number;
+  };
+}
+
 export interface SearchConfiguration {
   name: string;
   keywords?: string;
   onlyTitle?: boolean;
   shippable?: boolean;
-  locations?: (number | string)[];
+  locations?: (number | string | Location)[];
   category?: string;
   ownerType?: 'all' | 'pro' | 'private';
   priceMin?: number;
