@@ -165,6 +165,7 @@ export interface Location {
 		lat: number;
 		lng: number;
 		default_radius: number;
+		radius?: number;
 	};
 }
 
@@ -210,7 +211,7 @@ export interface Search {
 	keywords?: string;
 	only_title?: boolean;
 	shippable?: boolean;
-	locations?: (number | string)[];
+	locations?: (number | string | Location)[];
 	category?: string;
 	limit?: number;
 	offset?: number;

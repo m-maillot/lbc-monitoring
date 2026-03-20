@@ -57,13 +57,14 @@
   flex-wrap: wrap;
 }
 
-.btnAdd, .btnSave, .btnMonitor, .btnDelete, .btnRemove {
+.btnAdd, .btnSave, .btnMonitor, .btnDelete, .btnRemove, .btnToggle {
   padding: 12px 24px;
   border: none;
   border-radius: 8px;
   font-size: 1em;
   font-weight: 600;
   transition: all 0.2s;
+  cursor: pointer;
 }
 
 .btnAdd {
@@ -130,6 +131,18 @@
   background: #5a6268;
 }
 
+.btnToggle {
+  background: #6c757d;
+  color: white;
+  padding: 6px 12px;
+  font-size: 0.9em;
+}
+
+.btnToggle:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+}
+
 .searches {
   display: flex;
   flex-direction: column;
@@ -193,7 +206,8 @@
 
 .formGroup input[type="text"],
 .formGroup input[type="number"],
-.formGroup select {
+.formGroup select,
+.formGroup textarea {
   padding: 10px 12px;
   border: 2px solid #e0e0e0;
   border-radius: 6px;
@@ -203,9 +217,15 @@
 
 .formGroup input[type="text"]:focus,
 .formGroup input[type="number"]:focus,
-.formGroup select:focus {
+.formGroup select:focus,
+.formGroup textarea:focus {
   outline: none;
   border-color: #f76b1c;
+}
+
+.formGroup textarea {
+  resize: vertical;
+  min-height: 100px;
 }
 
 .formGroup input[type="checkbox"] {

@@ -9,12 +9,27 @@ interface BuyerLocation {
   radiusKm?: number;
 }
 
+interface Location {
+  locationType: string;
+  label?: string;
+  city?: string;
+  zipcode?: string;
+  department_id?: string;
+  region_id?: string;
+  area?: {
+    lat: number;
+    lng: number;
+    default_radius: number;
+    radius?: number;
+  };
+}
+
 interface SearchConfig {
   name: string;
   keywords?: string;
   onlyTitle?: boolean;
   shippable?: boolean;
-  locations?: (number | string)[];
+  locations?: (number | string | Location)[];
   category?: string;
   ownerType?: 'all' | 'pro' | 'private';
   priceMin?: number;
@@ -35,6 +50,7 @@ export default function Home() {
   const [monitoring, setMonitoring] = useState(false);
   const [monitoringOutput, setMonitoringOutput] = useState<string>('');
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [editingFields, setEditingFields] = useState<Record<string, string>>({});
 
   useEffect(() => {
     loadConfig();
@@ -146,6 +162,57 @@ export default function Home() {
     const newSearches = [...config.searches];
     delete newSearches[index].buyerLocation;
     setConfig({ ...config, searches: newSearches });
+  };
+
+
+  const addLocationToSearch = (index: number) => {
+    const newLocation: Location = {
+      locationType: 'city',
+      label: 'Vallans (79270)',
+      city: 'Vallans',
+      zipcode: '79270',
+      department_id: '79',
+      region_id: '20',
+      area: {
+        lat: 46.21444,
+        lng: -0.55246,
+        default_radius: 5000,
+        radius: 1000
+      }
+    };
+
+    const currentLocations = config.searches[index].locations || [];
+    updateSearch(index, 'locations', [...currentLocations, newLocation]);
+  };
+
+  const removeLocationFromSearch = (searchIndex: number, locationIndex: number) => {
+    const currentLocations = config.searches[searchIndex].locations || [];
+    updateSearch(searchIndex, 'locations', currentLocations.filter((_, i) => i !== locationIndex));
+  };
+
+  const updateLocationField = (searchIndex: number, locationIndex: number, field: string, value: any) => {
+    const currentLocations = [...(config.searches[searchIndex].locations || [])];
+    const location = currentLocations[locationIndex];
+
+    if (typeof location === 'object') {
+      if (field.startsWith('area.')) {
+        const areaField = field.split('.')[1];
+        const existingArea = location.area || { lat: 0, lng: 0, default_radius: 5000, radius: 1000 };
+        currentLocations[locationIndex] = {
+          ...location,
+          area: {
+            ...existingArea,
+            [areaField]: value
+          }
+        };
+      } else {
+        currentLocations[locationIndex] = {
+          ...location,
+          [field]: value
+        };
+      }
+      updateSearch(searchIndex, 'locations', currentLocations);
+    }
   };
 
   if (loading) {
@@ -295,16 +362,225 @@ export default function Home() {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label>Localisations (séparées par des virgules)</label>
-                  <input
-                    type="text"
-                    value={search.locations?.join(', ') || ''}
-                    onChange={(e) => {
-                      const locs = e.target.value.split(',').map(l => l.trim()).filter(l => l);
-                      updateSearch(index, 'locations', locs.map(l => isNaN(Number(l)) ? l : Number(l)));
-                    }}
-                    placeholder="Ex: Paris, Lyon ou 11, 75"
-                  />
+                  <label style={{ marginBottom: '8px', display: 'block' }}>Localisations</label>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                    {search.locations?.map((loc, locIndex) => {
+                      if (typeof loc !== 'object') return null;
+                      const location = loc as Location;
+                      return (
+                        <div key={locIndex} style={{
+                          padding: '15px',
+                          border: '2px solid #e0e0e0',
+                          borderRadius: '8px',
+                          background: '#f8f9fa'
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                            <strong style={{ color: '#333' }}>Localisation #{locIndex + 1}</strong>
+                            <button
+                              type="button"
+                              onClick={() => removeLocationFromSearch(index, locIndex)}
+                              className={styles.btnDelete}
+                              style={{ padding: '4px 8px', fontSize: '0.85em' }}
+                            >
+                              🗑️
+                            </button>
+                          </div>
+
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                            <div>
+                              <label style={{ fontSize: '0.85em', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Type</label>
+                              <select
+                                value={location.locationType}
+                                onChange={(e) => updateLocationField(index, locIndex, 'locationType', e.target.value)}
+                                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                              >
+                                <option value="city">Ville</option>
+                                <option value="department">Département</option>
+                                <option value="region">Région</option>
+                              </select>
+                            </div>
+
+                            <div>
+                              <label style={{ fontSize: '0.85em', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Label</label>
+                              <input
+                                type="text"
+                                value={location.label || ''}
+                                onChange={(e) => updateLocationField(index, locIndex, 'label', e.target.value)}
+                                placeholder="Vallans (79270)"
+                                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                              />
+                            </div>
+
+                            <div>
+                              <label style={{ fontSize: '0.85em', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Ville</label>
+                              <input
+                                type="text"
+                                value={location.city || ''}
+                                onChange={(e) => updateLocationField(index, locIndex, 'city', e.target.value)}
+                                placeholder="Vallans"
+                                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                              />
+                            </div>
+
+                            <div>
+                              <label style={{ fontSize: '0.85em', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Code postal</label>
+                              <input
+                                type="text"
+                                value={location.zipcode || ''}
+                                onChange={(e) => updateLocationField(index, locIndex, 'zipcode', e.target.value)}
+                                placeholder="79270"
+                                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                              />
+                            </div>
+
+                            <div>
+                              <label style={{ fontSize: '0.85em', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Département ID</label>
+                              <input
+                                type="text"
+                                value={location.department_id || ''}
+                                onChange={(e) => updateLocationField(index, locIndex, 'department_id', e.target.value)}
+                                placeholder="79"
+                                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                              />
+                            </div>
+
+                            <div>
+                              <label style={{ fontSize: '0.85em', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Région ID</label>
+                              <input
+                                type="text"
+                                value={location.region_id || ''}
+                                onChange={(e) => updateLocationField(index, locIndex, 'region_id', e.target.value)}
+                                placeholder="20"
+                                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                              />
+                            </div>
+                          </div>
+
+                          <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #ddd' }}>
+                            <strong style={{ fontSize: '0.9em', color: '#333', display: 'block', marginBottom: '8px' }}>Coordonnées GPS et rayon</strong>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                              <div>
+                                <label style={{ fontSize: '0.85em', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Latitude</label>
+                                <input
+                                  type="text"
+                                  value={editingFields[`${index}-${locIndex}-lat`] ?? (location.area?.lat !== undefined && location.area.lat !== 0 ? location.area.lat : '')}
+                                  onChange={(e) => {
+                                    const strVal = e.target.value;
+                                    const fieldKey = `${index}-${locIndex}-lat`;
+                                    setEditingFields({ ...editingFields, [fieldKey]: strVal });
+
+                                    const val = parseFloat(strVal);
+                                    if (!isNaN(val)) {
+                                      updateLocationField(index, locIndex, 'area.lat', val);
+                                    }
+                                  }}
+                                  onBlur={() => {
+                                    const fieldKey = `${index}-${locIndex}-lat`;
+                                    const newFields = { ...editingFields };
+                                    delete newFields[fieldKey];
+                                    setEditingFields(newFields);
+                                  }}
+                                  placeholder="46.21444"
+                                  style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                                />
+                              </div>
+
+                              <div>
+                                <label style={{ fontSize: '0.85em', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Longitude</label>
+                                <input
+                                  type="text"
+                                  value={editingFields[`${index}-${locIndex}-lng`] ?? (location.area?.lng !== undefined && location.area.lng !== 0 ? location.area.lng : '')}
+                                  onChange={(e) => {
+                                    const strVal = e.target.value;
+                                    const fieldKey = `${index}-${locIndex}-lng`;
+                                    setEditingFields({ ...editingFields, [fieldKey]: strVal });
+
+                                    const val = parseFloat(strVal);
+                                    if (!isNaN(val)) {
+                                      updateLocationField(index, locIndex, 'area.lng', val);
+                                    }
+                                  }}
+                                  onBlur={() => {
+                                    const fieldKey = `${index}-${locIndex}-lng`;
+                                    const newFields = { ...editingFields };
+                                    delete newFields[fieldKey];
+                                    setEditingFields(newFields);
+                                  }}
+                                  placeholder="-0.55246"
+                                  style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                                />
+                              </div>
+
+                              <div>
+                                <label style={{ fontSize: '0.85em', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Rayon par défaut (m)</label>
+                                <input
+                                  type="text"
+                                  value={editingFields[`${index}-${locIndex}-default_radius`] ?? (location.area?.default_radius || '')}
+                                  onChange={(e) => {
+                                    const strVal = e.target.value;
+                                    const fieldKey = `${index}-${locIndex}-default_radius`;
+                                    setEditingFields({ ...editingFields, [fieldKey]: strVal });
+
+                                    const val = parseInt(strVal);
+                                    if (!isNaN(val)) {
+                                      updateLocationField(index, locIndex, 'area.default_radius', val);
+                                    }
+                                  }}
+                                  onBlur={() => {
+                                    const fieldKey = `${index}-${locIndex}-default_radius`;
+                                    const newFields = { ...editingFields };
+                                    delete newFields[fieldKey];
+                                    setEditingFields(newFields);
+                                  }}
+                                  placeholder="5000"
+                                  style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                                />
+                              </div>
+
+                              <div>
+                                <label style={{ fontSize: '0.85em', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Rayon personnalisé (m)</label>
+                                <input
+                                  type="text"
+                                  value={editingFields[`${index}-${locIndex}-radius`] ?? (location.area?.radius || '')}
+                                  onChange={(e) => {
+                                    const strVal = e.target.value;
+                                    const fieldKey = `${index}-${locIndex}-radius`;
+                                    setEditingFields({ ...editingFields, [fieldKey]: strVal });
+
+                                    const val = parseInt(strVal);
+                                    if (!isNaN(val)) {
+                                      updateLocationField(index, locIndex, 'area.radius', val);
+                                    }
+                                  }}
+                                  onBlur={() => {
+                                    const fieldKey = `${index}-${locIndex}-radius`;
+                                    const newFields = { ...editingFields };
+                                    delete newFields[fieldKey];
+                                    setEditingFields(newFields);
+                                  }}
+                                  placeholder="1000"
+                                  style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    <button
+                      type="button"
+                      onClick={() => addLocationToSearch(index)}
+                      className={styles.btnAdd}
+                      style={{ marginTop: '10px' }}
+                    >
+                      ➕ Ajouter une localisation
+                    </button>
+                  </div>
+                  <small style={{ color: '#666', fontSize: '0.85em', marginTop: '8px', display: 'block' }}>
+                    Créez des localisations avec coordonnées GPS et rayon personnalisé
+                  </small>
                 </div>
 
                 <div className={styles.locationSection}>

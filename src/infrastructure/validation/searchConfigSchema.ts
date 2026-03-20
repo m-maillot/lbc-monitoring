@@ -6,12 +6,27 @@ export const BuyerLocationSchema = z.object({
   radiusKm: z.number().min(0, 'Le rayon doit être positif').optional(),
 });
 
+export const LocationSchema = z.object({
+  locationType: z.string(),
+  label: z.string().optional(),
+  city: z.string().optional(),
+  zipcode: z.string().optional(),
+  department_id: z.string().optional(),
+  region_id: z.string().optional(),
+  area: z.object({
+    lat: z.number(),
+    lng: z.number(),
+    default_radius: z.number(),
+    radius: z.number().optional(),
+  }).optional(),
+});
+
 export const SearchConfigurationSchema = z.object({
   name: z.string().min(1, 'Le nom de la recherche est obligatoire'),
   keywords: z.string().optional(),
   onlyTitle: z.boolean().optional(),
   shippable: z.boolean().optional(),
-  locations: z.array(z.union([z.number(), z.string()])).optional(),
+  locations: z.array(z.union([z.number(), z.string(), LocationSchema])).optional(),
   category: z.string().optional(),
   ownerType: z.enum(['all', 'pro', 'private']).optional(),
   priceMin: z.number().min(0, 'Le prix minimum doit être positif').optional(),

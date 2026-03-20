@@ -13,6 +13,7 @@ import {
 } from './types';
 
 export async function search<T>(search_filters_input: Search): Promise<SearchResult<T>> {
+  console.log('search', JSON.stringify(_makeFilters(search_filters_input)));
   const res = await fetch('https://api.leboncoin.fr/finder/search', {
     method: 'POST',
     headers: HEADERS,
@@ -162,12 +163,19 @@ export function _makeFiltersLocations(search_filters_input: Search) {
   const locations: Location[] = [];
 
   search_filters_input.locations?.forEach((location) => {
-    if (typeof location === 'string' && location.match(/[a-z]/i)) {
+    // Si c'est déjà un objet Location valide, on l'utilise directement
+    if (typeof location === 'object' && 'locationType' in location) {
+      locations.push(location as Location);
+    }
+    // Sinon, recherche par nom (string avec lettres)
+    else if (typeof location === 'string' && location.match(/[a-z]/i)) {
       const locationInfo = getLocationByName(location);
       if (locationInfo) {
         locations.push(locationInfo);
       }
-    } else {
+    }
+    // Sinon, recherche par code (string numérique ou number)
+    else {
       const locationInfo = getLocationByCode(location);
       locations.push(locationInfo);
     }
