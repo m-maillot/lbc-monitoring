@@ -37,6 +37,7 @@ export const SearchConfigurationSchema = z.object({
     max: z.number().optional(),
   })).optional(),
   buyerLocation: BuyerLocationSchema.optional(),
+  intervalMinutes: z.number().int().min(1, "L'intervalle doit être d'au moins 1 minute").optional(),
 }).refine(
   (data) => {
     if (data.priceMin !== undefined && data.priceMax !== undefined) {

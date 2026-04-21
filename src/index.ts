@@ -12,6 +12,7 @@ export interface MonitorOptions {
   configPath?: string;
   storePath?: string;
   logger?: ILogger;
+  searchNames?: string[];
 }
 
 export async function runMonitoring(options: MonitorOptions = {}) {
@@ -45,7 +46,7 @@ export async function runMonitoring(options: MonitorOptions = {}) {
     emailNotifier
   );
 
-  await monitorUseCase.execute();
+  await monitorUseCase.execute(options.searchNames);
 }
 
 async function main() {

@@ -14,10 +14,13 @@ export class MonitorAdvertisements {
     private emailNotifier?: IEmailNotifier
   ) {}
 
-  async execute(): Promise<void> {
+  async execute(searchNames?: string[]): Promise<void> {
     this.logger.info('🔍 Démarrage de la surveillance des annonces LBC...\n');
 
-    const searchConfigs = await this.searchConfigRepository.getAll();
+    const allConfigs = await this.searchConfigRepository.getAll();
+    const searchConfigs = searchNames
+      ? allConfigs.filter((c) => searchNames.includes(c.name))
+      : allConfigs;
 
     if (searchConfigs.length === 0) {
       this.logger.error('❌ Aucune configuration de recherche trouvée');

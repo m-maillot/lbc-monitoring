@@ -9,6 +9,7 @@
       "priceMin": 100,
       "priceMax": 500,
       "ownerType": "all",
+      "intervalMinutes": 30,
       "buyerLocation": {
         "lat": 48.8566,
         "lng": 2.3522,

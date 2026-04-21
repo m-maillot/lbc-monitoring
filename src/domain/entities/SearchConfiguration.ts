@@ -32,4 +32,5 @@ export interface SearchConfiguration {
   enums?: Record<string, string[]>;
   ranges?: Record<string, { min?: number; max?: number }>;
   buyerLocation?: BuyerLocation;
+  intervalMinutes?: number;
 }

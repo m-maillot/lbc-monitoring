@@ -37,6 +37,7 @@ interface SearchConfig {
   enums?: Record<string, string[]>;
   ranges?: Record<string, { min?: number; max?: number }>;
   buyerLocation?: BuyerLocation;
+  intervalMinutes?: number;
 }
 
 interface Config {
@@ -279,6 +280,20 @@ export default function Home() {
                     onChange={(e) => updateSearch(index, 'name', e.target.value)}
                     placeholder="Ex: MacBook à Paris"
                   />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label>Intervalle d'exécution automatique (minutes)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={search.intervalMinutes || ''}
+                    onChange={(e) => updateSearch(index, 'intervalMinutes', e.target.value ? Number(e.target.value) : undefined)}
+                    placeholder="Ex: 30 (laisser vide pour désactiver)"
+                  />
+                  <small style={{ color: '#666', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
+                    Le scheduler lancera cette recherche automatiquement toutes les N minutes
+                  </small>
                 </div>
 
                 <div className={styles.formGroup}>
